@@ -13,7 +13,7 @@ function (angular, $) {
       var container = '<div class="panel-container"></div>';
       var content = '<div class="panel-content"></div>';
 
-      var panelHeader =
+      var basePanelHeader =
       '<div class="panel-header">'+
        '<div class="row-fluid panel-extra">' +
           '<div class="panel-extra-container">' +
@@ -26,8 +26,9 @@ function (angular, $) {
 
             '<span class="panel-loading" ng-show="panelMeta.loading">' +
               '<i class="icon-spinner icon-spin icon-large"></i>' +
-            '</span>' +
+            '</span>';
 
+      var panelHeader = basePanelHeader +
             '<span class="dropdown">' +
               '<span class="panel-text panel-title pointer" gf-dropdown="panelMeta.menu" tabindex="1" ' +
               'data-drag=true data-jqyoui-options="kbnJqUiDraggableOptions"'+
@@ -47,6 +48,14 @@ function (angular, $) {
           '</div>'+
         '</div>\n'+
       '</div>';
+
+      var notEditablePanelHeader = basePanelHeader +
+        '<span class="panel-text panel-title" tabindex="1">' +
+        '{{panel.title || "No title"}}' +
+        '</span>' +
+        '</div>' +
+        '</div>\n' +
+        '</div>';
 
       return {
         restrict: 'E',
@@ -92,7 +101,7 @@ function (angular, $) {
             'panels/' + panelType + "/module",
           ], function ($, moduleTemplate) {
             var $module = $(moduleTemplate);
-            $module.prepend(panelHeader);
+            $module.prepend($scope.panel.editable ? panelHeader : notEditablePanelHeader);
             $module.first().find('.panel-header').nextAll().wrapAll(content);
             loadModule($module);
           });
