@@ -14,7 +14,7 @@ function (angular, $, config) {
       var container = '<div class="panel-container"></div>';
       var content = '<div class="panel-content"></div>';
 
-      var panelHeader =
+      var basePanelHeader =
       '<div class="panel-header">'+
           '<span class="alert-error panel-error small pointer"' +
                 'config-modal="app/partials/inspector.html" ng-if="panelMeta.error">' +
@@ -23,13 +23,38 @@ function (angular, $, config) {
             '</span>' +
           '</span>' +
 
-          '<span class="panel-loading" ng-show="panelMeta.loading">' +
-            '<i class="icon-spinner icon-spin icon-large"></i>' +
-          '</span>' +
+            '<span class="panel-loading" ng-show="panelMeta.loading">' +
+              '<i class="icon-spinner icon-spin icon-large"></i>' +
+            '</span>';
 
-          '<div class="panel-title-container drag-handle" panel-menu></div>' +
-        '</div>'+
+      var panelHeader = basePanelHeader +
+            '<span class="dropdown">' +
+              '<span class="panel-text panel-title pointer" gf-dropdown="panelMeta.menu" tabindex="1" ' +
+              'data-drag=true data-jqyoui-options="kbnJqUiDraggableOptions"'+
+              ' jqyoui-draggable="'+
+              '{'+
+                'animate:false,'+
+                'mutate:false,'+
+                'index:{{$index}},'+
+                'onStart:\'panelMoveStart\','+
+                'onStop:\'panelMoveStop\''+
+                '}"  ng-model="panel" ' +
+                '>' +
+                '{{panel.title || "No title"}}' +
+              '</span>' +
+            '</span>'+
+
+          '</div>'+
+        '</div>\n'+
       '</div>';
+
+      var notEditablePanelHeader = basePanelHeader +
+        '<span class="panel-text panel-title" tabindex="1">' +
+        '{{panel.title || "No title"}}' +
+        '</span>' +
+        '</div>' +
+        '</div>\n' +
+        '</div>';
 
       return {
         restrict: 'E',
@@ -77,7 +102,7 @@ function (angular, $, config) {
             panelPath + "/module",
           ], function ($, moduleTemplate) {
             var $module = $(moduleTemplate);
-            $module.prepend(panelHeader);
+            $module.prepend($scope.panel.editable ? panelHeader : notEditablePanelHeader);
             $module.first().find('.panel-header').nextAll().wrapAll(content);
             loadModule($module);
           });
